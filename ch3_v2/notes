@@ -1,0 +1,28 @@
+18june2015:
+In the brown2014/chapter3 directory I created the ch3_v2 directory
+for the second version of the meadowlarks site described in chapter
+3 of brown2014. This is the version covered on pages 22 and 23 of
+brown2014. I did this by a recursive cp of the ch3_v1
+ directoryand deleting the package.json file and the node_modules directory.
+
+I then reran 
+
+npm init
+npm install --save express
+
+to create the new version of the package.json file and the 
+node_modules directory. 
+
+a) Version 2 is simply adding two route functions to the 
+meadowlark.js file and adding one parameter to the 404 function
+in the meadowlark.js file. 
+
+b) I then tested it in the browser as I did in version 1. I used
+the urls
+
+localhost:3000
+localhost:3000/
+localhost:3000/about
+
+and received the expected responses.
+ 

@@ -1,0 +1,178 @@
+18june2015:
+In the brown2014/chapter3 directory I created the ch3_v1 directory
+for the first version of the meadowlarks site described in chapter
+3 of brown2014. This is the version covered on pages 20 through the
+top of page 22 of brown2014. 
+
+In the ch3_v1 directory I created the site directory.
+See brown2014 page 33 for the recommendation that the top level
+be the project directory (which is the ch3_v1 directory) and the
+project root directory in which all the code resides (which is the
+directory I named site) is a subdirectory of the ch3_v1 directory.
+
+I. Initial Version
+a) I then did in the site directory
+
+npm init
+
+which creates the package.json file in the current directory and 
+prompts me for some information to enter in that file. I named 
+the entry point, meadowlark.js, not the suggested generic name.
+
+b) In the site directory I did
+
+npm install --save express
+
+which creates the node_modules directory in the site directory and adds
+some information to the package.json file.
+
+c) In the site directory I added a .gitignore file that lists the 
+node_modules subdirectory as something not to be added to the git repository. 
+
+d) I then added a meadowlark.js file to the site directory. The line near the start
+using the function named require is arranging access to a Node module named 
+express. 
+
+d1) I then tested it 
+by running the command (while in the site directory)
+
+node meadowlark.js
+
+to start the server listening on tcp port 3000.
+
+I then want to contact that server using a web browser. The server is
+running on agora which has only a few of its ports open (very few from 
+off campus; from on campus port 8080 is open). The book says to use
+the url 
+
+agora.cs.wcu.edu:3000
+
+but this is not possible because of these port restrictions.
+Instead I used the 
+localhost:3000 approach by starting an X window session from my laptop
+to agora.
+
+d1) for my ubuntu laptop, I created a terminal window and then used
+
+ssh -X holliday@agora.cs.wcu.edu
+
+to logon to agora. The -X flag enables X11 forwarding. At the resulting 
+agora shell prompt I entered
+
+firefox
+
+which started a browser running on agora but graphically appearing on 
+my laptop. The browser is named iceweasel (it is a bit slow starting when 
+the laptop is on-campus). In the iceweasel url field I entered
+
+localhost:3000
+
+Using iceweasel from off-campus works but is very slow.
+
+d2) for my windows laptop I first installed Xming from sourceforge and then
+started Xming running. I then installed putty.exe and started it running.
+In the putty dialog box I entered agora.cs.wcu.edu for the url of the remote
+machine. Then on the left side near the bottom I clicked on the plus sign
+next to the SSH label and then clicked on the X11 label that opens up. A
+new right side appears; near the top of it, I click on the box named
+Enable X11 forwarding to cause it to be checked. A ssh terminal to agora
+then appears. I logon to agora and then do the command
+
+firefox
+
+which starts the iceweasel browser running on agora but appearing in a
+window on my laptop. I then enter
+
+localhost:3000
+
+in the iceweasel url field.
+
+e) A brown suggests I added Ayima's Redirect plugin to the chrome browser 
+(which is the browser that I use) by googling that name.  I then after entering
+a url in the browser I then click on the icon for the plugin in the top
+right of the browser window.
+
+II. Version Control
+Version control is introduced in Chapter 4 and in version chapter4_v1 of these
+directories. However, I used git from this version, ch3v1 onward.
+
+a) I logged on to my github account (username: mholliday) and created a repo
+named ch3v1. I added to that repo a README.md file that has a brief description.
+The remaining steps are on agora. It is necessary to create the repo on agora
+before I do the 'git push' below otherwise, the 'git push' fails.
+
+b) On agora in the project directory, site, do the command
+
+git init
+
+to make that directory a git repository.
+
+c) Check that the .gitignore file exists in that directory and
+has
+
+node_modules
+
+listed so that the node_modules subdirectory will not be committed
+when we do a git commit.
+
+d) In the site directory do
+
+git add -A 
+
+to add the current versions of all the files in the site directory (except those
+listed in .gitignore) to the staging area.
+
+e) In the site directory do
+
+git commit -m "Initial commit"
+
+to commit all the files in the staging area. The local git repo now has a commit
+on its single branch named master.
+
+f) Do the command
+
+git remote
+
+or 
+
+git remote -v
+
+and there is no output since currently the local repo has not remotes.
+
+g) Make the repo on github a remote for the local repo by the command
+
+git remote add ch3v1 https://github.com/mholliday/ch3v1
+
+Then do 
+
+git remote -v
+
+to see the remote that has been added and the shortcut name ch3v1 to be used
+to refer to the remote. The shortcut name does not have to be the same name as on
+the remote location though in this example they are the same.
+
+h) I want to push to the remote the current content in the local repo that has committed.
+However, if I do that, I get an error message since the remote has a file that is
+not in the local repo. The remote file is the README.md. So I first need to pull that
+file from the remote which both fetches that file and merges it with the local repo.
+
+git pull ch3v1
+
+An ls command in the site directory shows that README.md now exists locally.
+
+i) Now I can do the push
+
+git push ch3v1 master
+
+which has the following output. This command is pushing to the remote named ch3v1 the
+committed files in the local branch named master.
+
+holliday@agora:~/other/363/fall15/brown2014/chapter3/ch3_v1/site$ git pull ch3v1 master
+From https://github.com/mholliday/brown2014
+ * branch            master     -> FETCH_HEAD
+Merge made by the 'recursive' strategy.
+ README.md | 2 ++
+ 1 file changed, 2 insertions(+)
+ create mode 100644 README.md
+
+

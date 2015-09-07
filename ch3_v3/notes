@@ -1,0 +1,56 @@
+19june2015:
+In the brown2014/chapter3 directory I created the ch3_v3 directory
+for the third version of the meadowlarks site described in chapter
+3 of brown2014. This version is covered on pages 24-most of 26
+of brown2014.
+
+I did this by a recursive cp of the ch3_v3 directory
+and deleting the package.json file and the node_modules directory.
+
+I then reran 
+
+npm init
+npm install --save express
+
+to create the new version of the package.json file and the 
+node_modules directory. 
+
+Or do
+
+npm install -g express
+
+once for all version.
+
+Version 3 involves 
+
+a) installing the express3-handlebars package using
+
+npm install --save express3-handlebars
+
+command. This is a templating framework and is not the default one
+that is jade.
+
+b) add to meadowlark.js some lines near the top for making handlebars
+the view engine.
+
+c) creating a directory named views in the site directory and creating a 
+directory named layouts in the views directory.
+
+d) in the layouts directory creating a main.handlebars file which is a 
+template and contains {{{body}}} which will be replaced with the HTML for
+each view. Note that three braces are needed on each side to force the HTML
+to be interpreted as HTML.
+
+e) created the files in the view directory each of which is one view page
+representing one page in the website. The files are
+
+views/home.handlebars
+views/about.handlebars
+views.404.handlebars
+views/500.handlebars
+
+f) modify the route functions in meadowlarks.js for '/' and '/about' and
+modify the middleware functions in meadowlarks.js for 404 and 500.
+
+g) I then tested it in the browser as I did the earlier versions.
+ 
