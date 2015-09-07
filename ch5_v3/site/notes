@@ -1,0 +1,79 @@
+29june2015:
+In the brown2014/chapter5 directory I created the ch5_v3 directory
+for the third version of the meadowlarks site described in chapter
+5 of brown2014. This is the version on pages 48-52 of brown2014 which involve using jshint for lint checking, linkchecker for checking links, and grunt for toolchain automation. 
+I started with a recursive cp of the ch5_v2 directory.
+
+I. Lint Checking
+
+a) In the site directory install jshint by
+
+npm install --save-dev jshint
+
+b) In the site directory do
+
+jshint meadowlark.js
+
+and there will be no output since jshint does not detect any problems with meadowlark.js.
+
+c) To illustrate a jshint complaint add the line
+
+if (app.thing == null) console.log('bleat!');
+
+to meadowlark.js and rerun jshint. There will be a warning about
+using ``=='' instead of ``===''. Now remove that line.
+
+II. Link Checking
+
+a) The program linkchecker needs to be installed the system administrator. The download is at
+
+http://wummel.github.io/linkchecker/
+
+b) Assuming that the system administrator has installed linkchecker, in one shell go to the site directory and start the node server with
+
+node meadowlark.js
+
+and in another shell execute the command
+
+linkchecker http://localhost:3000
+
+III. Toolchain Automation Using Grunt
+
+a) Install the packages for the grunt command line (that is, cli)
+and grunt itself using (in the site directory)
+
+npm install --save-dev grunt-cli
+npm install --save-dev grunt
+
+Note the grunt-cli install is different from the brown2014 and I
+did not need to use sudo probably since I am just doing a install
+in the local node project.
+
+b) Install the npm packages that are grunt plugins while in the
+site directory.
+
+npm install --save-dev grunt-cafe-mocha
+npm install --save-dev grunt-contrib-jshint
+npm install --save-dev grunt-exec
+
+c) Create a file in the site directory named Gruntfile.js. See
+page 50 of brown2014 for the code. I had to make a few changes
+
+i) in the configuration information for cafemocha I changed `qa/tests-*.js' to `qa/tests-unit.js' since zombie is not working.
+ii) in the load plugin array near the top I remove the comma after
+`grunt-exec'. I did not remove the comma after the jshint initConfig
+info though I do not see why it is there.
+
+d) I created a second shell and cd'ed to the site directory and ran the command
+
+node meadowlark.js
+
+to start the node server running.
+
+e) In the first shell in the site directory I ran the command
+
+grunt
+
+to cause grunt to execute all the tasks in the specified toolchain.
+
+

@@ -1,0 +1,126 @@
+23june2015:
+In the brown2014/chapter5 directory I created the ch5_v2 directory
+for the second version of the meadowlarks site described in chapter
+5 of brown2014. This is the version on pages 44-47 of brown2014 which
+involve using zombie for cross-page testing. 
+I started with a recursive cp of the ch5_v1 directory.
+
+I. Cross-page Testing
+
+a) In the site/views directory create a tours directory.
+In the tours directory create a file named hood-rivers.handlebars
+that includes a link to a request-group-rate page.
+
+b) In the tours directory create the request-group-rates.handlebars page. 
+This page has the html for a form and
+also has a field in the form that is of type ''hidden' with
+name 'referrer'. That page also at the bottom has a 
+$(document).ready function. This function is a jQuery feature
+that causes the code in its callback function to only run
+when the web page has completely loaded (including the value
+in the form field named ``referrer''). The code in that
+callback function get the value of that form field.
+
+c) Add two routes to the meadowlark.js file. Those two routes
+are for the two tour pages we just added.
+
+d) Install zombie which is the testing framework we are using
+for cross-page testing by
+
+npm install --save-dev zombie
+
+e) Create a new directory named qa in the site directory. So
+the new directory is site/qa and is distinct from the already 
+existing directory site/public/qa.
+
+f) In the site/qa directory create a file named tests-crosspage.js. 
+Add content the tests-crosspage.js file that is
+a test suite that has a setup function. A setup function is
+executed by the zombie test framework before each test is run.
+In this case, the setup function creates a new browser instance
+for each test. There are three tests.
+
+The first test calls the browser.visit function to cause zombie
+to go to the hood-river web page. The callback function then 
+clicks on the link (that is, the a tag) that has class
+requestGroupRate (the `.' indicates that this is a class css
+selector). The callback function for clickLink sees if the form
+field named `referrer' has the the hood-river page as its value.
+
+The second test is similar but for the oregon-coast web pae.
+
+The third tests starts at the request group rate page itself
+and checks that the field named `referrer' is empty which it
+should be since we did not arrive at the request group rate 
+page from somewhere else.
+
+g) I then started the node server in one terminal using the
+command
+
+node meadowlark.js
+
+In a second terminal I then ran the command
+
+mocha -u tdd -R spec qa/tests-crosspage.js 2>/dev/null
+
+I got a 'command not found' message because the mocha executable
+is not in the path of my PATH environment variable. So I 
+specified explicitly the path to the mocha executable using
+the command
+
+./node_modules/.bin/mocha -u tdd -R spec qa/tests-crosspage.js
+
+which causes mocha to run and to show the error stack traces
+(since I took the 2>/dev/null off the end of the command). 
+There is no output except the error stack traces so none of
+the tests ran successfully.
+
+The problem is on agora is version v0.10.29 of node. The zombie
+framework just works with io.js which is a fork of node. The 
+zombie website specifically says that zombie only works with
+io.js.
+
+II. Logic Testing
+a) In the site/qa directory create a tests-unit.js file to
+have a test suite with one test that illustrates unit
+testing of just the logic of a page.
+
+b) The in the site directory run the command
+
+./node_modules/.bin/mocha -u tdd -R spec qa/tests-unit.js
+
+which works correctly showing that one test passes.
+
+c) You can make invoking mocha simpler by adding this file path 
+to your PATH environment variable.When you have written the code 
+for your unit tests, use the following commands to run the tests 
+assuming you are in the site directory.
+
+On agora at the command prompt enter
+
+	printenv PATH
+
+to see the current value of your PATH environment variable.
+In your home directory on agora edit your .profile file by adding 
+at the end of it the line
+
+$PATH = “./node_modules/.bin:$HOME/bin:$PATH”
+
+Then at the command prompt enter
+
+source .profile
+
+which causes your shell to read your .profile file. Now do 
+
+printenv PATH
+
+again and you will see ./node_modules/.bin added to the front of 
+the sequence of file pathnames that are examined for executables. 
+Your .profile file will automatically be read by your shell 	
+each time you logon to agora.
+
+As a result we can redo the mocha invocation command as
+
+mocha -u tdd -R spec qa/tests-unit.js
+
+

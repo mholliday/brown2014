@@ -1,0 +1,77 @@
+21june2015:
+In the brown2014/chapter3 directory I created the ch3_v4 directory
+for the fourth version of the meadowlarks site described in chapter
+3 of brown2014. This is the version starting on the bottom of page
+26 (with static files) and going through page 28 (dynamic views) of
+brown2014.
+I did this by a recursive cp of the ch3_v3 directory.
+
+I then reran 
+
+npm init
+
+to create the new version of the package.json file.
+
+Version 4 involves 
+
+I. Static Files
+a) In the project directory, site, I created a directory named public.
+
+b) Edit meadowlark.js to put a line declaring the middleware named
+static before the routes. This middleware allows static files to be
+accessed by file pathnames in the url; that is, like files in the
+original static web sites.
+
+c) In the directory site/public create a subdirectory named img to
+hold static image files. Put in the img subdirectory the file logo.png.
+
+d) Edit the file site/views/layout/main.handlebars to add in some 
+html to reference the static image file, logo.png.
+
+II. Dynamic Views
+a) Edit the file site/meadowlarks.js to add an array declaration for
+a variable named fortunes. The code in the book has a typographical error. 
+After the last element of the array there
+is not supposed to be a comma. If the comma is there, then the
+About page will not display correctly.
+
+b) Edit the file site/views/about.handlebars to include the html to
+display a fortune using the {{fortune}} notation to insert a passed value
+dynamically into the html.
+
+<h1>About Meadowlark Travel</h1>
+
+<p>Your fortune for the day:</p>
+<blockquote>{{fortune}}</blockquote>
+
+c) Further edit the file site/meadowlarks.js by modifying the route
+function for /about to include randomly picking a string from the fortunes
+array and assigning it to the variable named randomFortune.
+
+app.get('/about', function(req, res) {
+  res.render('about', function(req, res) {
+    var randomFortune =
+      fortunes[Math.floor(Math.random() * fortunes.length)];
+    res.render('about', { fortune: randomFortune });
+  });
+});
+
+This code introduces a key concept which is the 
+
+{fortune: randomFortune} 
+
+which passes a javascript object to the view /about which has one key-value
+pair. The key of that pair, fortune, identifies {{fortune}} in the view
+and causes the value of that key-value pair (which is the value of the variable
+randomFortune) to replace {{fortune}} in the view. So this is what makes 
+template files, template files; the template placeholder gets replaced by the 
+value passed upon the res.render function call.
+
+d) Restart the server by doing
+
+node meadowlarks.js
+
+in the site directory and in the iceweasel browser go to localhost:3000
+and then you will see home page include the logo.png icon. Then go
+to localhost:3000/about in the iceweasel browser and you will see a 
+randomly picked fortune appear.

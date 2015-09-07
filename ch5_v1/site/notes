@@ -1,0 +1,168 @@
+21june2015:
+In the brown2014/chapter5 directory I created the ch5_v1 directory
+for the first version of the meadowlarks site described in chapter
+5 of brown2014. This is the version on pages 41-44 of brown2014 which
+involve using the mocha and chai modules for page testing. 
+I started with a recursive cp of the ch4_v1 directory.
+
+I then reran 
+
+npm init
+
+to create the new version of the package.json file and 
+
+git init
+
+to make the directory a git repo.
+
+I. Setup mocha and chai
+a) In the site directory do
+
+npm install --save-dev mocha
+
+to install the mocha package in node_modules and list it in the development 
+dependencies object in package.json. Mocha is the javascript test framework
+we will use for page testing and logic testing.
+
+a1) Then do
+
+mkdir public/vendor
+cp node_modules/mocha/mocha.js  public/vendor
+cp node_modules/mocha/mocha.css   public/vendor
+
+to make the mocha files accessible to the browser.
+
+b) In the site directory do
+
+npm install --save-dev chai
+cp node_modules/chai/chai.js  public/vendor
+
+to do the same for the chai package which we will use for assertions.
+
+II. Configure being able to turn on testing as a url query string
+
+We want to configure the code in meadowlark.js and the views directory so
+that http://localhost:3000 loads the home page just as before, but that
+http://localhost:3000?test=1 loads a version of the home page that also includes
+the page tests.
+
+a) In site/meadowlark.js add middleware to detect test=1 in the query string.
+It must appear before any routes that we define.
+
+app.use(function(req, res, next) {
+  res.locals.showTests = app.get('env') !== 'production' && 
+    req.query.test === '1';
+  next();
+});
+
+b) Modify the <head> section of views/layouts/main.handlebars to conditionally
+include the mocha test framework and to link in jQuery. jQuery is primarily
+used for DOM manipulation, but here we are using it to make test assertiions.
+
+<head>
+  <title>Meadowlark Travel</title>
+  {{#if showTests}}
+    <link rel="stylesheet" href="/vendor/mocha.css">
+  {{/if}}
+  <script src="//code.jquery.com/jquery-2.0.2.min.js"></script>
+</head>
+
+c) Add just before the </body> tag of views/layouts/main.handlebars code to
+use mocha and chai.
+
+{{#if showTests}}
+  <div id="mocha"></div>
+  <script src="/vendor/mocha.js"></script>
+  <script src="/vendor/chai.js"></script>
+  <script>
+    mocha.ui('tdd');
+    var assert = chai.assert;
+  </script>
+  <script src="/qa/tests-global.js"></script>
+  {{#if pagetestScript}}
+    <script src="{{pageTestScript}}"></script>
+  {{/if}}
+  <script>mocha.run();</script>
+  {{/if}}
+</body>
+
+This code illustrates that the handlebars templating language supports conditional
+statements, #if showTests. The command mocha.ui('tdd'); sets the mocha user interface
+to Test-Driven Development, the default is Behavior-Driven Development. 
+
+d) Create a qa (for quality assurance) directory inside site/public. In the qa directory
+create a file named tests-global.js. Near the top of page 43 the sentence starting
+"Note that Mocha and Chai ... /qa/global-tests.js'' I think is supposed to be
+/qa/tests-global.js instead.
+
+e) Edit the file site/public/qa/tests-global.js to have
+
+suite('Global Tests', function() {
+  test('page has a valid title', function() {
+    assert(document.title && document.title.match(/\S/) &&
+      document.title.toUpperCase() !== 'TODO');
+  });
+});
+
+This is a test suite that has one test in it. the match function's argument is
+a regex (regular expression) that matches any single non-whitespace character.
+The regex /\s/ means any single whitespace character and /\S/ is the any single
+non-whitespace character.
+
+e) Restart the server by doing
+
+node meadowlark.js
+
+in the site directory and in the iceweasel browser go to localhost:3000/ and the page 
+will appear as before. Now go to localhost:3000/?test=1 and the tests run
+on the page.
+
+III. Add a page-specific test
+a) Create a file named site/public/qa/tests-about.js that contains
+
+suite('"About" Page Tests', funciton() {
+  test('page should contain link to contact page', function() {
+    assert($('a[href="/contact"]').length);
+  });
+});
+
+b) Edit the app.get route function in meadowlark.js to add
+a key-value pair about the pageTestScript to the context that is passed to the view. In particular, the new version of this
+function is
+
+app.get('/about', function(req, res) {
+  res.render('about', {
+    fortune: fortune:getFortune(),
+    pageTestScript: '/qa/tests-about.js'
+  });
+});
+
+c) Restart the server by doing
+
+node meadowlark.js
+
+in the site directory and in the iceweasel browser enter the
+url http://localhost:3000/about and the page will not show any
+tests. Now enter the url http://localhost:3000/about/?test=1 
+and you will see both the global test and the page-specific test
+run.
+
+d) You will see the global test suite run (twice; I am not
+sure why twice) with one test in the suite passing. You will
+see the page-specific test suite for the about page run with 
+one test that fails because the link to the contacts page
+does not exist. Add that link in the about page by adding
+the following txt to the bottom of site/views/about.handlebars.
+
+<p>Please feel free to <a href="/contact">contact us</a>
+with any questions or comments.</p>
+
+Note that the contact page does not exist yet. That is fine;
+we just need a link to it in the about page. Clicking on that
+link in the iceweasel browser will cause a 404 error page to
+appear.
+
+e) Now enter the url http://localhost:3000/about/?test=1 
+and you will see both the global test and the page-specific test
+run and pass.
+

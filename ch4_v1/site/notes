@@ -1,0 +1,135 @@
+21june2015:
+In the brown2014/chapter4 directory I created the ch4_v1 directory
+for the first version of the meadowlarks site described in chapter
+4 of brown2014. This is the version starting on page 31 and ending
+on page 32 of brown2014 (for the git part) and pages 33-36 for the
+node module part.
+I did this by a recursive cp of the ch3_v4 directory.
+
+I then reran 
+
+npm init
+
+to create the new version of the package.json file.
+
+Version 1 involves 
+
+I. Version Control
+a) In the project directory, site, do the command
+
+git init
+
+to make that directory a git repository.
+
+b) Check that the .gitignore file exists in that directory and
+has
+
+node_modules
+
+listed so that the node_modules subdirectory will not be committed
+when we do a git commit.
+
+c) In the site directory do
+
+git add -A 
+
+to add the current versions of all the files in the site directory (except those
+listed in .gitignore) to the staging area.
+
+d) In the site directory do
+
+git commit -m "Initial commit"
+
+to commit all the files in the staging area.
+
+e) Examine the book's git respository on github at
+
+github.com/EthanRBrown/web-development-with-node-and-express
+
+and look at all the code and all the features of github including the branch
+history graph
+
+f) (Extension) Further practice with git using more of the commands from the Pro Git
+book including branches. Create another directory in my account on agora to act as a remote git 
+repo and do pulling and pushing.
+
+II. Node Modules
+a) Examine the site/package.json file to see that it consists of two javascript
+objects, one for a description (that is, the project metadata)
+of the npm package that represents the project
+and one for a listing of all the npm package dependencies of the project.
+
+b) As explained on page 33 of brown20214 there is a distinction between a node
+module and a npm package. Node modules provide modularizaton and encapsulaton. A
+Node module is imported into a Node project using the function named require as in
+
+require('express');
+
+or 
+
+require('./lib/fortune.js');
+
+where the former is a provided module which is searched for in the directory
+named node_modules and the latter is a custom module the user wrote and is the ./lib
+directory. A Node module is often (always?) a single file. 
+
+A npm package is a scheme for storing, versioning, and referencing projects.
+A npm package can be a Node module, but it need not be. So express is both a
+npm package and a Node module (and also described as a web mvc framework). But each
+of the versions of the brown2014 code that we have created is a npm package, but
+not a Node module. Also, the module fortune.js created below is a Node module, 
+but not a npm package.
+
+A npm package is a directory that has a package.json file in it and can be provided
+by others (e.g. express) or be custom (e.g. fortune.js).
+
+On page 33 of brown2014 the author says that the directory node_modules should be
+named npm_packages. I am not sure about that since everything in that directory is
+a Node module though some are also npm packages (e.g. express). The function named
+require is for importing Node modules and looks in the node_modules directory by
+default unless given an argument that is a different file pathname.
+
+This part of chapter five is about how to create and use a custom Node module
+named fortunes.js that encapsulate the fortune message code that is currently in
+meadowlark.js.
+
+c) Create a directory lib in the site directory to hold custom modules. In the
+directory site/lib create a file named fortune.js. This file has the declaration
+of the fortuneCookies variable and array of fortune messages. For no apparent
+reason in this chapter of brown2014 this variable is named fortuneCookies while
+in chapter 3 of brown2014 (in version ch3_v3), it is named fortunes.
+
+c1) The file function.js also has the 
+a function named getFortune for randomly picking and returning a fortune message. 
+The header for that function is
+
+exports.getFortune function() {
+
+with the ``exports.'' making the function visible outside of the module.
+
+d) Edit site/meadowlark.js to import the fortune module by the line
+
+var fortune = require('./lib/fortune.js');
+
+and modify the route for the About function by adding the code
+
+app.get('/about', function(req, res) {
+  res.render('about', {fortune: fortune.getFortune() });
+});
+
+We can also remove the declaration of the fortuneCookie variable and array from
+meadowlark.js since we are not using it anymore. Not removing that code would not
+cause any problems.
+
+e) Commit these changes to the git repo by
+
+git add -A
+git commit -m 'Moved `fortune cookie' functionality into module."
+
+d) Restart the server by doing
+
+node meadowlarks.js
+
+in the site directory and in the iceweasel browser go to localhost:3000/about 
+in the iceweasel browser and you will see a randomly picked fortune appear.
+So the fortune functionality still works as a custom node module.
